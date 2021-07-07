@@ -1,0 +1,7 @@
+---
+
+- name: restart chrony
+  systemd:
+    name: "{{ chrony_service }}"
+    state: restarted
+  when: ansible_virtualization_type != "docker"

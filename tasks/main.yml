@@ -1,0 +1,31 @@
+---
+- name: Check required variables
+  fail: msg="chrony_servers or chrony_pools must be defined"
+  when:
+    - not chrony_servers
+    - not chrony_pools
+
+- name: Determine OS if facts not already gathered
+  setup:
+    gather_subset:
+      - '!all'
+  when: ansible_system is undefined | default(true)
+
+# When finding OS-specific files, look for most-specific first
+# ansible_distribution = RedHat, CentOS, Ubuntu
+# ansible_os_family = RedHat, Debian
+# ansible_system = Linux, Windows
+
+- name: include OS-specific var files
+  include_vars: "{{ lookup('first_found', params_chrony_var_files) }}"
+  vars:
+    params_chrony_var_files:
+      files:
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+        - '{{ ansible_system }}.yml'
+      paths:
+        - vars
+
+- name: include tasks for chrony setup
+  include_tasks: Linux.yml

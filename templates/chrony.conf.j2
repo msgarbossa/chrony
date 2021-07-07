@@ -1,0 +1,36 @@
+{# Initialize variables #}
+{% set default_opts = chrony_default_opts|join(' ') -%}
+{% set server_dict = {} -%}
+{% set pool_dict = {} -%}
+{# parse chrony_servers for string, list, dict #}
+{% if chrony_servers is string -%}
+  {% set chrony_servers = chrony_servers.split(',') -%}
+{% endif -%}
+{% if chrony_servers is mapping -%}
+  {% set server_dict = chrony_servers -%}
+{% elif chrony_servers is sequence -%}
+  {% for server in chrony_servers -%}
+    {% set test = server_dict.update({server: []}) -%}
+  {% endfor %}
+{% endif -%}
+{# parse chrony_pools for string, list, dict #}
+{% if chrony_pools is string -%}
+  {% set chrony_pools = chrony_pools.split(',') -%}
+{% endif -%}
+{% if chrony_pools is mapping -%}
+  {% set pool_dict = chrony_pools -%}
+{% elif chrony_pools is sequence -%}
+  {% for pool in chrony_pools -%}
+    {% set test = pool_dict.update({pool: []}) -%}
+  {% endfor %}
+{% endif -%}
+{# write config based on above variables #}
+{% for server,opts in server_dict.items() -%}
+server {{ server }} {{ opts|join(' ') | default(default_opts, true) }}
+{% endfor -%}
+{% for pool,opts in pool_dict.items() -%}
+pool {{ pool }} {{ opts|join(' ') | default(default_opts, true) }}
+{% endfor -%}
+{% for k,v in chrony_config.items() -%}
+{{ k }} {{ v }}
+{% endfor -%}

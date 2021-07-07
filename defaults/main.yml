@@ -1,0 +1,9 @@
+---
+chrony_servers:
+chrony_pools:
+chrony_default_opts: [ "iburst" ]
+chrony_config:
+  driftfile: /var/lib/chrony/drift
+  makestep: 1.0 3
+  rtcsync:
+  logdir: /var/log/chrony

@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+
+  tasks:
+
+  - name: Include role
+    include_role:
+      name: chrony
+    vars:
+      chrony_servers:
+        10.10.1.1:
+          - iburst
+          - xleave
+        10.10.1.2: []

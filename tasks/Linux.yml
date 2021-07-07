@@ -1,0 +1,30 @@
+---
+
+- name: Install chrony package
+  package:
+    name: chrony
+    state: present
+
+- name: /var/run/chrony directory
+  file:
+    path: /var/run/chrony
+    state: directory
+    mode: '0750'
+    owner: "{{ chrony_user }}"
+    group: "{{ chrony_group }}"
+
+- name: create chrony.conf from template
+  template:
+    src: chrony.conf.j2
+    dest: "{{ chrony_conf_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart chrony
+
+- name: Ensure {{ chrony_service }} service is enabled and started
+  systemd:
+    name: "{{ chrony_service }}"
+    state: started
+    enabled: yes
+  when: ansible_virtualization_type != "docker"

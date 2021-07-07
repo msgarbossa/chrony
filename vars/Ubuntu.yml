@@ -1,0 +1,5 @@
+---
+chrony_conf_file: /etc/chrony/chrony.conf
+chrony_service: "chrony"
+chrony_user: "_chrony"
+chrony_group: "_chrony"
